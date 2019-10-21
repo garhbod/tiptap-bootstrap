@@ -3,35 +3,7 @@
     <img alt="Vue logo" src="./assets/logo.png">
 
     <div class="container">
-      <div class="card">
-        <editor-menu-bar :editor="editor" v-slot:default="{ commands, isActive }">
-          <div class="card-header btn-toolbar p-1" role="toolbar" aria-label="Editor Toolbar">
-            <div class="btn-group btn-group-sm mr-2" role="group">
-              <editor-menu-button command="undo"
-                                  :commands="commands" :is-active="isActive"/>
-              <editor-menu-button command="redo"
-                                  :commands="commands" :is-active="isActive"/>
-            </div>
-            <div class="btn-group btn-group-sm mr-2" role="group">
-              <editor-menu-button command="bold"
-                                  :commands="commands" :is-active="isActive"/>
-              <editor-menu-button command="italic"
-                                  :commands="commands" :is-active="isActive"/>
-              <editor-menu-button command="underline"
-                                  :commands="commands" :is-active="isActive"/>
-              <editor-menu-button command="strike" icon="strikethrough"
-                                  :commands="commands" :is-active="isActive"/>
-            </div>
-            <div class="btn-group btn-group-sm mr-2" role="group">
-              <editor-menu-button command="paragraph"
-                                  :commands="commands" :is-active="isActive"/>
-              <editor-menu-button command="heading" :args="{ level: 2 }"
-                                  :commands="commands" :is-active="isActive"/>
-            </div>
-          </div>
-        </editor-menu-bar>
-        <editor-content :editor="editor" class="card-body p-3"/>
-      </div>
+      <EditorComponent :content="content" :editor="editor"></EditorComponent>
     </div>
   </div>
 </template>
@@ -54,22 +26,18 @@
         Underline,
         History,
     } from 'tiptap-extensions';
-    import EditorMenuButton from './components/EditorMenuButton.vue';
+    import EditorComponent from './components/Editor.vue';
 
     export default {
         name: 'app',
         components: {
-            EditorMenuButton,
+            EditorComponent,
             EditorMenuBar,
             EditorContent,
         },
-        props: {
-            content: {
-                default: '<h1>Welcome to Your Vue.js App</h1>',
-            }
-        },
         data() {
             return {
+                content: '<h1>Welcome to Your Vue.js App</h1>',
                 editor: new Editor({
                     extensions: [
                         new HardBreak(),
@@ -87,7 +55,6 @@
                         new Underline(),
                         new History(),
                     ],
-                    content: `${this.content}`,
                     onUpdate: ({getHTML}) => {
                         this.$emit('input', {
                             content: getHTML(),
