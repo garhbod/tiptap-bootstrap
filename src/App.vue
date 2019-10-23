@@ -26,7 +26,7 @@
         </div>
       </editor-floating-menu>
 
-      <editor-menu-bubble :editor="editor" :keep-in-bounds="keepInBounds" v-slot="editorParams">
+      <editor-menu-bubble :editor="editor" v-slot="editorParams">
         <div class="menububble border bg-light rounded"
              :class="{ 'is-active': editorParams.menu.isActive }"
              :style="`left: ${editorParams.menu.left}px; bottom: ${editorParams.menu.bottom}px;`">
@@ -47,15 +47,15 @@
 </template>
 
 <script>
-import { Editor, EditorContent, EditorMenuBubble, EditorFloatingMenu } from 'tiptap';
+import {
+  Editor, EditorContent, EditorMenuBubble, EditorFloatingMenu,
+} from 'tiptap';
 import {
   HardBreak,
   Heading,
   OrderedList,
   BulletList,
   ListItem,
-  TodoItem,
-  TodoList,
   Bold,
   Code,
   Italic,
@@ -78,21 +78,62 @@ export default {
   },
   props: {
     content: {
-      default: '<h1>tiptap Bootstrap - rendering the renderless</h1>',
+      default: '<h1>Bootstap - rendering the renderless</h1>',
+    },
+    options: {
+      default() {
+        return {
+          menu: [
+            'undo',
+            'redo',
+            [
+              'bold',
+              'italic',
+              'underline',
+              {
+                command: 'strike',
+                icon: 'strikethrough',
+              },
+            ],
+            [
+              'paragraph',
+              {
+                command: 'heading',
+                args: {
+                  level: 1,
+                },
+                slot: 'H1',
+              },
+              {
+                command: 'bullet_list',
+                icon: 'list-ul',
+              },
+              {
+                command: 'ordered_list',
+                icon: 'list-ol',
+              },
+            ],
+          ],
+        };
+      },
     },
   },
   data() {
+    console.log(this.options.menu.flatMap(this.getCommands).filter(function (value, index, self) {
+        return self.indexOf(value) === index;
+    }).map((fn) => {
+      if (typeof fn === 'function')
+        return new fn()
+    }));
     return {
-      keepInBounds: true,
       editor: new Editor({
         extensions: [
+          new HardBreak(),
           new HardBreak(),
           new Heading({ levels: [1, 2, 3] }),
           new BulletList(),
           new OrderedList(),
           new ListItem(),
-          new TodoItem(),
-          new TodoList(),
           new Bold(),
           new Code(),
           new Italic(),
@@ -109,6 +150,29 @@ export default {
         },
       }),
     };
+  },
+  methods: {
+    mapCommand(command) {
+        const commands = {
+            'undo': History,
+            'redo': History,
+        };
+
+        if (Object.prototype.hasOwnProperty.call(commands, command)) {
+            return commands[command];
+        }
+    },
+    getCommands(item, index, array) {
+      if (typeof item === 'string') {
+        return this.mapCommand(item);
+      } else if (typeof item === 'object') {
+        if (Object.prototype.hasOwnProperty.call(item, 'command')) {
+          return this.mapCommand(item.command);
+        } else {
+          return item.map(this.getCommands);
+        }
+      }
+    },
   },
 };
 </script>
