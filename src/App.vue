@@ -9,25 +9,45 @@
              :style="`top: ${editorParams.menu.top}px`">
           <div class="btn-toolbar p-1" role="toolbar" aria-label="Editor Toolbar">
             <div class="btn-group btn-group-sm mr-2" role="group">
-              <editor-menu-button command="heading" :args="{ level: 1 }" :editor-params="editorParams">H1</editor-menu-button>
-              <editor-menu-button command="heading" :args="{ level: 2 }" :editor-params="editorParams">H2</editor-menu-button>
-              <editor-menu-button command="heading" :args="{ level: 3 }" :editor-params="editorParams">H3</editor-menu-button>
+              <editor-menu-button command="heading" :args="{ level: 1 }"
+                                  :editor-params="editorParams">H1</editor-menu-button>
+              <editor-menu-button command="heading" :args="{ level: 2 }"
+                                  :editor-params="editorParams">H2</editor-menu-button>
+              <editor-menu-button command="heading" :args="{ level: 3 }"
+                                  :editor-params="editorParams">H3</editor-menu-button>
             </div>
-            <div class="btn-group btn-group-sm mr-2" role="group">
-              <editor-menu-button command="bullet_list" icon="list-ul" :editor-params="editorParams" />
-              <editor-menu-button command="ordered_list" icon="list-ol" :editor-params="editorParams" />
+            <div class="btn-group btn-group-sm" role="group">
+              <editor-menu-button command="bullet_list" icon="list-ul"
+                                  :editor-params="editorParams" />
+              <editor-menu-button command="ordered_list" icon="list-ol"
+                                  :editor-params="editorParams" />
             </div>
           </div>
         </div>
       </editor-floating-menu>
+
+      <editor-menu-bubble :editor="editor" :keep-in-bounds="keepInBounds" v-slot="editorParams">
+        <div class="menububble border bg-light rounded"
+             :class="{ 'is-active': editorParams.menu.isActive }"
+             :style="`left: ${editorParams.menu.left}px; bottom: ${editorParams.menu.bottom}px;`">
+          <div class="btn-group btn-group-sm" role="group">
+            <editor-menu-button command="bold" :editor-params="editorParams"/>
+            <editor-menu-button command="italic" :editor-params="editorParams"/>
+            <editor-menu-button command="underline" :editor-params="editorParams"/>
+            <editor-menu-button command="strike" icon="strikethrough"
+                                :editor-params="editorParams"/>
+          </div>
+        </div>
+      </editor-menu-bubble>
       <editor-component :content="content" :editor="editor"></editor-component>
-      <editor-content :editor="editor" class="editor__content border border-top-0 rounded-bottom p-3"/>
+      <editor-content :editor="editor"
+                      class="editor__content border border-top-0 rounded-bottom p-3"/>
     </div>
   </div>
 </template>
 
 <script>
-import { Editor, EditorContent, EditorFloatingMenu } from 'tiptap';
+import { Editor, EditorContent, EditorMenuBubble, EditorFloatingMenu } from 'tiptap';
 import {
   HardBreak,
   Heading,
@@ -53,6 +73,7 @@ export default {
     EditorComponent,
     EditorMenuButton,
     EditorContent,
+    EditorMenuBubble,
     EditorFloatingMenu,
   },
   props: {
@@ -62,6 +83,7 @@ export default {
   },
   data() {
     return {
+      keepInBounds: true,
       editor: new Editor({
         extensions: [
           new HardBreak(),
@@ -114,6 +136,33 @@ export default {
       &.is-active {
         opacity: 1;
         visibility: visible;
+      }
+    }
+
+    .menububble {
+      position: absolute;
+      display: flex;
+      z-index: 20;
+      margin-bottom: 0.5rem;
+      transform: translateX(-50%);
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.2s, visibility 0.2s;
+
+      &.is-active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      &__form {
+        display: flex;
+        align-items: center;
+      }
+
+      &__input {
+        font: inherit;
+        border: none;
+        background: transparent;
       }
     }
   }

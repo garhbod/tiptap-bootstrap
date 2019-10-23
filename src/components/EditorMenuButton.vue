@@ -1,7 +1,7 @@
 <template>
   <button type="button" class="btn btn-light"
           :class="activeClass" @click.prevent="editorParams.commands[command](args)">
-    <slot><i class="fas" :class="iconClass"></i></slot>
+    <slot><i class="fas fa-fw" :class="iconClass"></i></slot>
   </button>
 </template>
 
