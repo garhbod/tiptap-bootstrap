@@ -1,51 +1,45 @@
 <template>
   <button type="button" class="btn btn-light"
-          :class="activeClass" @click.prevent="commands[command](args)">
-    <i class="fas" :class="iconClass"></i>
+          :class="activeClass" @click.prevent="editorParams.commands[command](args)">
+    <slot><i class="fas" :class="iconClass"></i></slot>
   </button>
 </template>
 
 <script>
-    export default {
-        name: 'editor-menu-button',
-        props: {
-            command: {
-                required: true,
-                type: String,
-            },
-            commands: {
-                required: true,
-                type: Object,
-                default: () => {
-                },
-            },
-            isActive: {
-                required: true,
-                type: Object,
-                default: () => {
-                },
-            },
-            args: {
-                type: Object,
-                default: () => {
-                },
-            },
-            icon: {
-                type: String,
-            },
-        },
-        computed: {
-            activeClass() {
-                return this.isActive[this.command] && this.isActive[this.command](this.args)
-                    ? 'active' : null;
-            },
-            iconClass() {
-                return `fa-${this.icon ? this.icon : this.command}`;
-            },
-        },
-    };
+export default {
+  name: 'editor-menu-button',
+  props: {
+    command: {
+      required: true,
+      type: String,
+    },
+    editorParams: {
+      required: true,
+      type: Object,
+      default: () => {},
+    },
+    args: {
+      type: Object,
+      default: () => {},
+    },
+    icon: {
+      type: String,
+    },
+  },
+  computed: {
+    activeClass() {
+      return this.editorParams.isActive[this.command]
+        && this.editorParams.isActive[this.command](this.args) ? 'active' : null;
+    },
+    iconClass() {
+      return `fa-${this.icon ? this.icon : this.command}`;
+    },
+  },
+};
 </script>
 
-<style>
-  @import "~@fortawesome/fontawesome-free/css/all.css";
+<style scoped>
+  .btn {
+    font-family: Courier, monospace;
+  }
 </style>
